@@ -4945,3 +4945,146 @@ array range ( mixed $start , mixed $end [, number $step = 1 ] )
 
 array_fill — 用给定的值填充数组
 array array_fill ( int $start_index , int $num , mixed $value )
+
+php函数的不能重名。
+
+------类start(兄弟连)>>>>>>>>>>>>>>>>>>>>>>>>>
+类用class声明。
+
+类成员属性前面一定要有一个修饰词。
+
+用new声明一个对象。
+
+用->访问对象的属性和方法。
+对象的赋值用->
+
+php类中的$this总是指向调用者的本身。
+
+构造方法__constuct()：对象创建后第一个调用的方法，用于对象中的成员赋初始值0。
+构造方法可以用类名作方法名，但后期修改类名的时候，要随类名更改。所以php5后用__constuct()更好。
+
+析构函数__desturct():对象销毁前最后一个调用的函数。通常于打开资源，比如打开图片，打开文件，打开数据库。
+
+php类的三大特性：封装性，继承性，多态性。
+
+php5支持如下3种访问修饰符：
+public:公有的，外面可以调用。
+protected:受保护的，子类可以调用。
+private:私有的，仅类的本身可以调用。用于封装一些外边不需要用的功能。比如一个打电话的类，播号功能设为public,信号怎么传输，怎么接收的功能设为private。看别人的代码只需要看别人的公开的public成员。
+
+
+private修饰的属性不允许外面直接访问和赋值。但可以通过创建方法去访问和赋值。这样做的意义是可以设计范围。
+ps:
+<?php
+    class Person{
+        private $sex;
+        public function __constuct($sex){
+            $this->setSex($sex);//注意这里，可以限制初始化的值。
+        } 
+        public function setSex($sex){
+            if(!($sex=='boy' || $sex=='girl')){
+                return;
+            }
+
+            $this->sex=$sex;
+        }
+
+        public function getSex(){
+            return $this->sex;
+        }
+    }
+
+    $boy=new Person('boy');
+    $boy->setSex('girl');
+    echo $boy->getSex();
+?>
+
+__set():对私有成员（成员属性和成员方法）直接赋值的时候，自动调用。
+__get():对私有成员直接获取的时候调用。
+
+__isset():在使用isset()判断一个私有属性是否存在时，自动调用。
+__unset():删除对象中的私有成员。
+ps:
+<?php
+    class Person{
+        public $name;
+        private $age;
+        private $salary;
+        public function __construct($name,$age){
+            $this->name=$name;
+            $this->age=$age;
+        }
+
+        public function __isset($x){
+            if($x=='salary'){
+                echo '131313<br>';
+                return false;
+            }
+            echo '16161616<br>';
+            return isset($this->$x);
+        }
+    }
+
+    $boy=new Person('xiaojing',26);
+
+    if(isset($boy->salary)){
+        echo 'exits<br>';
+    }else{
+        echo 'not exits<br>';
+    }
+?>
+
+ps2:
+<?php
+    class Person{
+        public $name;
+        private $age;
+        private $salary;
+        public function __construct($name,$age){
+            $this->name=$name;
+            $this->age=$age;
+        }
+
+        public function __unset($x){
+            echo '121212<br>';
+            unset($this->$x);
+        }
+
+        public function __get($x){
+            return $this->$x;
+        }
+}
+
+    $boy=new Person('xiaojing',26);
+    unset($boy->age);
+//    echo $boy->age;
+?>
+
+子类使用 extends 继承父类。
+
+继承的好处：
+1.可以把子类都需要的代码放在父类，提高代码的重用性。
+2.利于二次开发，在不改变原有类结构的情况下，在子类添加新功能。
+
+parent:: 访问父类的成员。
+
+self::可以在类中方法中，代表类的本身。
+
+子类的权限只能等于或大于父类。如父类是protectd，子类可以是protected和public
+
+instanceof 用于确定一个 PHP 变量是否属于某一类 class 的实例. 
+
+final 关键字:如果父类中的方法被声明为 final，则子类无法覆盖该方法。如果一个类被声明为 final，则不能被继承。 
+
+类和类的方法不允许修改可以用final,类的属性不允许修改可以用常量。
+
+Static（静态）关键字:声明类属性或方法为静态，就可以不实例化类而直接访问。静态属性不能通过一个类已实例化的对象来访问（但静态方法可以）。 
+特点：
+1.使用static 修饰成员属性，存在内存的初始化静态段。
+2.可以被所有同一个类的对象共用。
+3.第一个用到类（类名第一次出现），类在加载到内存时，就已经将静态的成员加到内存。
+4.静态的成员要用类名来访问,classname::property 
+5.self::可以在类中方法中，代表类的本身。self::可以在类中方法中，代表类的本身。self::可以在类中方法中，代表类的本身。self::可以在类中方法中，代表类的本身。self::可以在类中方法中，代表类的本身。
+6.静态成员一旦被加载，只有脚本结束才释放。
+7.缺点：在静态方法中，是不能访问非静态的成员的。原因：$this是指向本对象，而静态方法是不用创建新对象才调用。
+8.优点：只要能用静态的环境下声明方法，就最好使用静态方法。（效率高）
