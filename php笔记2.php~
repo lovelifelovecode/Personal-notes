@@ -5225,6 +5225,3 @@ json_encode — 对变量进行 JSON 编码
 eval() — 把字符串作为PHP代码执行
 
 var_export() — 输出或返回一个变量的字符串表示
-注：var_export()函数返回关于传递给该函数的变量的结构信息，它和var_dump()类似。不同的是其返回的表示是合法的php代码。var_export必须返回合法的php代码，也就是说，var_export返回的代码，可以直接当作php代码赋值个一个变量。而这个变量就会取得和被var_export一样的类型的值。
-
-__set_state()
