@@ -5226,5 +5226,123 @@ eval() — 把字符串作为PHP代码执行
 
 var_export() — 输出或返回一个变量的字符串表示
 注：var_export()函数返回关于传递给该函数的变量的结构信息，它和var_dump()类似。不同的是其返回的表示是合法的php代码。var_export必须返回合法的php代码，也就是说，var_export返回的代码，可以直接当作php代码赋值个一个变量。而这个变量就会取得和被var_export一样的类型的值。
+ps:
+不懂可以参考：[2014]兄弟连高洛峰.PHP教程.7.7.12.魔术方法__set_state()(ED2000.COM).mp4
+<?php
+    $str="echo 'kingaa';";
+    eval($str);
+    echo '<br>';
+    $arr=['x'=>'xiaojing','h'=>'haining','l'=>'lanpei'];
+
+    $a=eval('$b='.var_export($arr,true).";");
+
+    var_dump($b);
+    echo '<br>';
+    echo $b['x'];
+?>
 
 __set_state()
+static object __set_state ( array $properties )
+自 PHP 5.1.0 起当调用 var_export() 导出类时，此静态 方法会被调用。 
+
+
+__invoke()
+mixed __invoke ([ $... ] )
+当尝试以调用函数的方式调用一个对象时，__invoke() 方法会被自动调用。 
+ps:
+<?php
+class Person{
+    
+    public function __invoke($a,$b){
+        echo $a+$b;
+    }
+}
+
+$boy=new Person();
+$boy(3,7);
+?>
+
+__callstatic()
+在静态上下文中调用一个不可访问方法时，__callStatic() 会被调用。 
+
+
+__autoload — 尝试加载未定义的类.
+在脚本中，需要加载类的时候，就会自动调用这个方法。
+ps:
+file:   say.class.php
+<?php
+class say{
+    public function saygood(){
+        return 'say goodbly<br>';
+    }
+}
+?>
+file2:  index.php
+<?php
+    function __autoload($className){
+        include strtolower($className).".class.php";
+    }
+    $boy=new say();
+    echo $boy->saygood();
+?>
+
+
+什么是抽象方法？
+定义：一个方法如果没有方法体，则这个方法就是抽象方法。
+1.声明一个方法，不使用{},而直接分号结束。
+2.如果是抽象方法，必须使用abstract修饰。
+
+什么是抽象类？
+1.如果一个类中有一个方法是抽象方法，则这个类就是抽象类。
+2.如果声明一个抽象类，则这个类必须使用abstract关键字修饰。
+3.抽象类不能实例化对象。
+4.继承一个抽象类的时候，子类必须定义父类中的所有抽象方法；另外，这些方法的访问控制必须和父类中一样（或者更为宽松）。
+5.如果子类只继承了部分抽象方法，则这个子类必须声明为抽象类。
+
+注意：
+1.只要使用abstract修饰的类，就是抽象类。
+2.抽象类是一种特殊的类，特殊的地方就是，在抽象类中可以有抽象方法。
+3.除了在抽象类中可以有抽象方法以外，和正常的类完全一样。
+ps:
+abstract class Person{
+    abstract function say();
+}
+
+抽象方法的作用：抽象方法规定了子类必须有这个方法的实现，功能交给子类。
+抽象类的作用：就是要求子类的结构，所以抽象类就是一个规范。
+
+
+接口
+抽象类是一种抽象的类，接口是一种特殊的抽象类。
+1.抽象类和接口中都有抽象方法。
+2.抽象类和接口都不能实例化对象。
+3.抽象类和接口的使用意义也就是作用相同。都是定义一种规范。
+
+接口和抽象类相比，特殊在哪里？
+1.接口中的方法，必须全是抽象方法（不能有不抽象的方法存在）。所以在接口中的抽象方法不需要使用abstract，直接使用结束即可。
+2.接口的成员属性，必须是常量（不能有变量）。
+3.所有的权限必须是public，不写默认是public.
+4.声明接口不使用class，而是使用interface
+ps:
+interface Person{
+    const NAME='king';
+    oabstract function say();
+}
+
+
+接口应用的一些细节：
+1.可以使用extends让一个接口继承另一个接口（接口和接口，只有扩展新抽象方法，没有覆盖的关系）。
+2.可以使用一个类来实现接口中的全部方法，也可以使用一个抽象类来实现接口中的部分方法。（类与接口，抽象类与接口，有覆盖重写接口中的抽象方法）
+3.使用implements关键字实现接口。
+4.一个类可以继承另一个类的同时，使用implements实现一个或多个接口。
+5.实现多个接口，只需要使用逗号分开多个接口即可。
+ps:
+class Boy extends Person implements Test,Say{
+}
+
+
+多态特性
+注：辅助理解案例子（开发电脑后，定义usb的规范，其他设备厂商按照规范生产带ubs接口的设备）,可以看案例[2014]兄弟连高洛峰.PHP教程.7.10.1.PHP图形计算器需求分析(ED2000.COM).mp4
+作用：程序扩展准备
+
+技术：必须有继承关系，父类最好是接口或抽象类。
