@@ -328,7 +328,7 @@ Note:函数、方法、静态类变量和类常量只有在 PHP 5 以后才可�
   }
 
   $rootbeer = 'A & W';
-  $ipa = 'Alexander Keith\'s';
+  $ipa = 'Alexander Keith\'s';   //'
 
   // 有效，输出： I'd like an A & W
   echo "I'd like an {${beers::softdrink}}\n";
@@ -363,6 +363,12 @@ Example #9 一些字符串示例
   $str[strlen($str)-1] = 'e';
 ?>
 
+ps2:(注意！！！！！！)
+<?php
+    $str='xiao';
+    $str[2]='jing';
+    var_dump($str);//输出xijo
+?>
 
 自 PHP 5.4 起字符串下标必须为整数或可转换为整数的字符串，否则会发出警告。之前例如 "foo" 的下标会无声地转换成 0。
 Example #10 PHP 5.3 和 PHP 5.4 的区别
@@ -5346,3 +5352,98 @@ class Boy extends Person implements Test,Say{
 作用：程序扩展准备
 
 技术：必须有继承关系，父类最好是接口或抽象类。
+
+命名空间
+解决php中不能重名的问题。不能重名的有：
+1.常量名
+2.函数名
+3.类名
+
+命名空间通过关键字namespace 来声明。
+如果一个文件中包含命名空间，它必须在其它所有代码之前声明命名空间，除了一个以外：declare关键字。
+ps:
+<?php
+    namespace xj;
+    const ROOT='xjRoot<br>';
+
+    echo ROOT;//使用当前目录下访问
+    echo \xj\ROOT;//使用绝对目录访问
+?>
+
+定义子命名空间
+与目录和文件的关系很象，PHP 命名空间也允许指定层次化的命名空间的名称。因此，命名空间的名字可以使用分层次的方式定义： namespace MyProject\Sub\Level;
+
+也可以在同一个文件中定义多个命名空间。在同一个文件中定义多个命名空间有两种语法形式.
+注：开发中不提倡在同一个文件中定义多个命名空间。不要在{}外不要加其他代码。
+
+
+命名空间和动态语言特征
+PHP 命名空间的实现受到其语言自身的动态特征的影响。如下：必须使用完全限定名称（包括命名空间前缀的类名称）。注意因为在动态的类名称、函数名称或常量名称中，限定名称和完全限定名称没有区别，因此其前导的反斜杠是不必要的。
+<?php
+    namespace king;
+    function demo(){
+        echo '777777';
+    }
+    $fun='demo';
+    //$fun='\king\demo';这样子才可以。
+    $fun();
+?>
+
+PHP支持两种抽象的访问当前命名空间内部元素的方法，__NAMESPACE__ 魔术常量和namespace关键字。
+
+常量__NAMESPACE__的值是包含当前命名空间名称的字符串。在全局的，不包括在任何命名空间中的代码，它包含一个空的字符串。 
+
+关键字 namespace 可用来显式访问当前命名空间或子命名空间中的元素。它等价于类中的 self 操作符。 
+
+
+使用命名空间：别名/导入
+ps：起别名king
+1. namespace hello\work as king
+2. namespace demo1\king //注：没有as的时候，最后一个为别名
+
+导入也是用use.
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<类start(兄弟连)
+
+count()可以统计字符串，返回都是1.
+
+utf-8格式下，一个中文占三个字符。
+gb2312格式下，一个中文占两个字符。
+
+双引号中解释数组，如果用{}隔开，可以包含有2个单引号或者2个双引号。
+ps1:
+<?php
+    $arr=['x'=>'xiao','j'=>'jing'];
+    echo "{$arr["x"]} is good boy!";  //注意"
+
+ps2:
+<?php
+    $arr=['x'=>'xiao','j'=>'jing'];
+    echo "$arr['x'] is good boy！";//运行到$arr['这里就会报错。
+    echo "$arr[x] is good girl!";//可以运行。
+
+
+多字节字符串处理(重点)
+系统中字符串函数基本都有mb_开头的函数配套函数。(只有处理中文的时候才用，因为效率低)
+
+常用的输出字符串函数：
+echo()-- 输出字符串.
+print()--输出一个字符串。
+die()--输出一条消息，并退出当前脚本。
+printf()--输出格式化字符串.
+sprintf()--把格式化的字符串写入一个变量中
+
+echo()与print()的区别：
+1.echo()没有返回值。print()有返回值。
+2.echo()在指令条件下可以连续输出多个值，print()不可以。
+ps:
+echo 'xiao','jing','good';//可以运行。
+echo('xiao','jing','good');//不可以运行。
+
+die()是exit()的别名的关系。
+
+printf()和sprintf()都是格式化输出。（了解下，不用重点）
+！
+！
+！
+格式在ppt中，没写完。
