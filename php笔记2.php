@@ -5405,6 +5405,7 @@ ps：起别名king
 
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<类start(兄弟连)
 
+学字符串主要学习：分割，查找，替换
 count()可以统计字符串，返回都是1.
 
 utf-8格式下，一个中文占三个字符。
@@ -5443,7 +5444,159 @@ echo('xiao','jing','good');//不可以运行。
 die()是exit()的别名的关系。
 
 printf()和sprintf()都是格式化输出。（了解下，不用重点）
-！
-！
-！
-格式在ppt中，没写完。
+字符串转换格式：
+%% 返回百分比符号。
+%b  二进制数。
+%c 依照ASCII值的字符。
+%d  带符号的十进制数。
+%e  可续计数法（如1.5e3)
+%u  无符号十进制数。
+%f或%F  浮点数
+%o  八进制
+%s  字符串
+%x或%X  十六进制数。
+
+ps1:printf("$b",10);//直接输出1010
+ps2:$sum=printf("$b",10);//没有输出，把1010赋值给$sum
+
+
+trim和ltrim,rtime注意事项：
+<?php
+    $str=' 26856hello World62356 ';
+    var_dump(trim($str,' 1234567890'));//把两边有数字和空格的全删掉
+    var_dump(trim($str,'0..9 hd'));//把两边有数字和空格，和字符h,d的都删掉。
+    var_dump(trim($str,'0..9a..z '));//过滤掉两边数字和小写字母和空格。
+?>
+
+str_pad — 使用另一个字符串填充字符串为指定长度
+string str_pad ( string $input , int $pad_length [, string $pad_string = " " [, int $pad_type = STR_PAD_RIGHT ]] )
+
+<?php
+    $input = "Alien";
+    echo str_pad($input, 10);                      // 输出 "Alien     "
+    echo str_pad($input, 10, "-=", STR_PAD_LEFT);  // 输出 "-=-=-Alien"
+    echo str_pad($input, 10, "_", STR_PAD_BOTH);   // 输出 "__Alien___"
+    echo str_pad($input,  6, "___");               // 输出 "Alien_"
+    echo str_pad($input,  3, "*");                 // 输出 "Alien"
+?>
+
+ucwords — 将字符串中每个单词的首字母转换为大写
+
+
+
+
+转义字符，转义，敝免sql注入,敝免html注入
+htmlspecialchars — 将特殊字符转换为 HTML 实体
+
+ string htmlspecialchars ( string $string [, int $flags = ENT_COMPAT | ENT_HTML401 [, string $encoding = ini_get("default_charset") [, bool $double_encode = true ]]] )
+
+某类字符在 HTML 中有特殊用处，如需保持原意，需要用 HTML 实体来表达。 本函数会返回字符转义后的表达。 如需转换子字符串中所有关联的名称实体，使用 htmlentities() 代替本函数。
+
+如果传入字符的字符编码和最终的文档是一致的，则用函数处理的输入适合绝大多数 HTML 文档环境。 然而，如果输入的字符编码和最终包含字符的文档是不一样的， 想要保留字符（以数字或名称实体的形式），本函数以及 htmlentities() （仅编码名称实体对应的子字符串）可能不够用。 这种情况可以使用 mb_encode_numericentity() 代替。
+
+执行转换 字符 	替换后
+& (& 符号) 	&amp;
+" (双引号) 	&quot;，除非设置了 ENT_NOQUOTES
+' (单引号) 	设置了 ENT_QUOTES 后， &#039; (如果是 ENT_HTML401) ，或者 &apos; (如果是 ENT_XML1、 ENT_XHTML 或 ENT_HTML5)。
+< (小于) 	&lt;
+> (大于) 	&gt;
+
+//'"(这行去掉变色用，不用管)
+ps:
+<?php
+    $new = htmlspecialchars("<a href='test'>Test</a>", ENT_QUOTES);
+    echo $new; // &lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;
+?>
+
+
+htmlspecialchars_decode — 将特殊的 HTML 实体转换回普通字符 
+ string htmlspecialchars_decode ( string $string [, int $flags = ENT_COMPAT | ENT_HTML401 ] )
+
+此函数的作用和 htmlspecialchars() 刚好相反。它将特殊的HTML实体转换回普通字符。
+
+被转换的实体有： &amp;， &quot; （没有设置ENT_NOQUOTES 时）, &#039; （设置了 ENT_QUOTES 时）， &lt; 以及&gt;。 
+
+
+
+addslashes
+
+(PHP 4, PHP 5, PHP 7)
+
+addslashes — 使用反斜线引用字符串
+说明
+string addslashes ( string $str )
+
+返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。这些字符是单引号（'）、双引号（"）、反斜线（\）与 NUL（NULL 字符）。
+
+一个使用 addslashes() 的例子是当你要往数据库中输入数据时。 例如，将名字 O'reilly 插入到数据库中，这就需要对其进行转义。 强烈建议使用 DBMS 指定的转义函数 （比如 MySQL 是 mysqli_real_escape_string()，PostgreSQL 是 pg_escape_string()），但是如果你使用的 DBMS 没有一个转义函数，并且使用 \ 来转义特殊字符，你可以使用这个函数。 仅仅是为了获取插入数据库的数据，额外的 \ 并不会插入。 当 PHP 指令 magic_quotes_sybase 被设置成 on 时，意味着插入 ' 时将使用 ' 进行转义。
+
+PHP 5.4 之前 PHP 指令 magic_quotes_gpc 默认是 on， 实际上所有的 GET、POST 和 COOKIE 数据都用被 addslashes() 了。 不要对已经被 magic_quotes_gpc 转义过的字符串使用 addslashes()，因为这样会导致双层转义。 遇到这种情况时可以使用函数 get_magic_quotes_gpc() 进行检测。
+
+
+<?php
+$str = "Is your name O'reilly?";
+
+// 输出： Is your name O\'reilly? //'
+echo addslashes($str);
+?>
+
+stripslashes — 反引用一个引用字符串
+说明:string stripslashes ( string $str )
+
+反引用一个引用字符串。
+
+    Note:如果 magic_quotes_sybase 项开启，反斜线将被去除，但是两个反斜线将会被替换成一个。
+
+一个使用范例是使用 PHP 检测 magic_quotes_gpc 配置项的 开启情况（在 PHP 5.4之 前默认是开启的）并且你不需要将数据插入到一个需要转义的位置（例如数据库）。例如，你只是简单地将表单数据直接输出。
+
+
+strip_tags — 从字符串中去除 HTML 和 PHP 标记
+string strip_tags ( string $str [, string $allowable_tags ] )
+
+该函数尝试返回给定的字符串 str 去除空字符、HTML 和 PHP 标记后的结果。它使用与函数 fgetss() 一样的机制去除标记。 
+
+
+nl2br — 在字符串所有新行之前插入 HTML 换行标记
+说明:string nl2br ( string $string [, bool $is_xhtml = true ] )
+在字符串 string 所有新行之前插入 '<br />' 或 '<br>'，并返回。
+
+md5()被破解原理
+现在有一些网站把大量可能用的密码，用md5加密后的序列保存为一个数据库。然后把你输入的md5()加密后的序列匹配。
+所以md5()加密最好有两层或三层以上。
+如：md5(md5($_POST['password'].'xiaojing'));
+
+字符串的比较：
+1.用等号去区分两个字符串是否相等。
+2.字符比较
+    strcmp()
+    strcasecmp()
+3.按自然排序法
+    strnatcmp()
+    strnatcase()
+
+用strcmp()也可以判判两个字符串是否相等。注意这个函数有返回值。
+strcmp — 二进制安全字符串比较
+int strcmp ( string $str1 , string $str2 )
+ps:
+
+<?php
+    $var1 = "Hello";
+    $var2 = "hello";
+    if (strcmp($var1, $var2) !== 0) {
+        echo '$var1 is not equal to $var2 in a case sensitive string comparison';
+    }
+?>
+
+strcasecmp — 二进制安全比较字符串（不区分大小写）
+
+strnatcmp — 使用自然排序算法比较字符串
+int strnatcmp ( string $str1 , string $str2 )
+与其他字符串比较函数类似，如果 str1 小于 str2 返回 < 0； 如果 str1 大于 str2 返回 > 0；如果两者相等，返回 0。 
+ps:
+<?php
+    $a='file11.txt';
+    $b='file2.txt';//普通排序是先比较1和2，自然排序是比较11和2
+    var_dump(strnatcmp($a,$b));
+?>
+
+strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
