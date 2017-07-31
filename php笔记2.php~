@@ -5405,6 +5405,7 @@ ps：起别名king
 
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<类start(兄弟连)
 
+学字符串主要学习：分割，查找，替换
 count()可以统计字符串，返回都是1.
 
 utf-8格式下，一个中文占三个字符。
@@ -5599,3 +5600,33 @@ ps:
 ?>
 
 strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
+
+经典获取扩展名(获取后缀名)
+<?php
+    function getExt($url){
+        //第一步，判断是否有问号存在 
+        if(strstr($url,'?')){
+            list($file)=explode('?',$url);
+        }else{
+            $file=$url;
+        }
+        //return $file;
+
+        //第二步，取出文件名
+        $loc=strrpos($file,"/")+1;//strrpos获取最后一个'/'
+        $fileName=substr($file,$loc);
+
+        //第三步，获取扩展名
+        $arr=explode(".",$fileName);
+        return array_pop($arr);
+    }
+
+    echo getExt('http://www.test.com/aa/bb/cc/good.php?user=king');
+?>
+
+dirname — 返回路径中的目录部分
+string dirname ( string $path )
+给出一个包含有指向一个文件的全路径的字符串，本函数返回去掉文件名后的目录名。
+
+str_repeat — 重复一个字符串
+string str_repeat ( string $input , int $multiplier )

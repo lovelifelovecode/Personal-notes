@@ -5600,3 +5600,71 @@ ps:
 ?>
 
 strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
+
+经典获取扩展名(获取后缀名)
+<?php
+    function getExt($url){
+        //第一步，判断是否有问号存在 
+        if(strstr($url,'?')){
+            list($file)=explode('?',$url);
+        }else{
+            $file=$url;
+        }
+        //return $file;
+
+        //第二步，取出文件名
+        $loc=strrpos($file,"/")+1;//strrpos获取最后一个'/'
+        $fileName=substr($file,$loc);
+
+        //第三步，获取扩展名
+        $arr=explode(".",$fileName);
+        return array_pop($arr);
+    }
+
+    echo getExt('http://www.test.com/aa/bb/cc/good.php?user=king');
+?>
+
+dirname — 返回路径中的目录部分
+string dirname ( string $path )
+给出一个包含有指向一个文件的全路径的字符串，本函数返回去掉文件名后的目录名。
+
+str_repeat — 重复一个字符串
+string str_repeat ( string $input , int $multiplier )
+
+判断两个文件的相对路径
+<?php
+    //获取2个文件的相对路径
+    function absPath($a,$b){
+        //第一步，去除公共目录结构,如果传进来的数据如下：
+        //$a='/a/b/c/d/e.php';
+        //$b='/a/b/12/c/c.php';
+        $a=dirname($a); //  /a/b/c/d 
+        $b=dirname($b); // /a/b/23/c
+
+        $a=trim($a,'/'); // a/b/c/d
+        $b=trim($b,'/'); // a/b/23/c
+
+        $a=explode('/',$a); // array('a','b','c','d');
+        $b=explode('/',$b); // array('a','b',12,'c');
+        //合起来写如下：
+        //$a=ecplode('/',trim(dirname($a),'/'));
+
+        $num=max(count($a),count($b));
+        for($i=0;$i<$num;$i++){
+            if($a[$i]==$b[$i]){
+                unset($a[$i]);
+                unset($b[$i]);
+            }else{
+                break;
+            }
+        }
+        //$a=array('c','d');
+        //$b=array(12,'c');
+
+        //第二步，回到同级，进入另一个目录
+        $path=str_repeat("../",count($b)).implode('/',$a);
+        return $path;
+    }
+
+    echo absPath('/a/b/c/d/e.php','/a/b/12/c/c.php');
+?>
