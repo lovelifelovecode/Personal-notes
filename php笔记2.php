@@ -6208,3 +6208,98 @@ is_uploaded_file — 判断文件是否是通过 HTTP POST 上传的
 is_writable — 判断给定的文件名是否可写
 is_writeable — is_writable 的别名
 
+glob — 寻找与模式匹配的文件路径
+array glob ( string $pattern [, int $flags = 0 ] )
+glob() 函数依照 libc glob() 函数使用的规则寻找所有与 pattern 匹配的文件路径，类似于一般 shells 所用的规则一样。不进行缩写扩展或参数替代。
+
+文件系统<<<<<<<<<<<<<<<<
+
+
+pow — 指数表达式
+number pow ( number $base , number $exp )
+返回 base 的 exp 次方的幂。如果可能，本函数会返回 integer。
+
+目录操作>>>>>>>>>>>>>>>>>>
+    chdir — 改变目录
+    chroot — 改变根目录
+    closedir — 关闭目录句柄
+    dir — 返回一个 Directory 类实例
+    getcwd — 取得当前工作目录
+    opendir — 打开目录句柄
+    readdir — 从目录句柄中读取条目
+    rewinddir — 倒回目录句柄
+
+disk_total_space — 返回一个目录的磁盘总大小
+float disk_total_space ( string $directory )
+
+disk_free_space — 返回目录中的可用空间
+float disk_free_space ( string $directory )
+scandir — 列出指定路径中的文件和目录
+
+
+经典案例：
+<?php
+    $dirNum=0;//目录数
+    $fileNum=0;//文件数
+
+    function getDirFileNum($dirName){
+        global $dirNum;
+        global $fileNum;
+
+        $dir=opendir($dirName);
+
+        while($fileName=readdir($dir)){
+            if($fileName!='.' && $fileName!='..'){
+                $fileName=$dirName.'/'.$fileName;
+
+                if(is_dir($fileName)){
+                    $dirNum++;
+                    getDirFileNum($fileName);//递归，查看所有子目录
+                }else{
+                    $fileNum++;
+                }
+            }
+        }
+
+        closedir($dir);
+    }
+    getDirFileNum('test');
+
+    echo 'all folder:'.$dirNum.'<br>';
+    echo 'all files'.$fileNum.'<br>';
+?>
+
+mkdir — 新建目录
+
+rmdir — 删除目录
+bool rmdir ( string $dirname [, resource $context ] )
+尝试删除 dirname 所指定的目录。 该目录必须是空的，而且要有相应的权限。 失败时会产生一个 E_WARNING 级别的错误
+
+unlink — 删除文件
+bool unlink ( string $filename [, resource $context ] )
+
+rename — 重命名一个文件或目录
+注：rename也可以移动文件或目录。
+bool rename ( string $oldname , string $newname [, resource $context ] )
+
+copy — 拷贝文件
+bool copy ( string $source , string $dest [, resource $context ] )
+将文件从 source 拷贝到 dest。 
+
+目录操作<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+文件操作>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+文件的基本操作：
+touch --创建空文件
+copy --复制文件
+rename --移动或者重命名一个文件
+unlink --删除一个文件
+fopen --打开文件
+ftruncate — 将文件截断到给定的长
+
+对文件内容的操作：
+file_get_contents — 将整个文件读入一个字符串
+file_put_contents — 将一个字符串写入文件
+file — 把整个文件读入一个数组中
+readfile — 输出文件
