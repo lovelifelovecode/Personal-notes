@@ -5624,9 +5624,15 @@ strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大�
     echo getExt('http://www.test.com/aa/bb/cc/good.php?user=king');
 ?>
 
+
 dirname — 返回路径中的目录部分
 string dirname ( string $path )
 给出一个包含有指向一个文件的全路径的字符串，本函数返回去掉文件名后的目录名。
+
+
+basename() - 返回路径中的文件名部分
+pathinfo() - 返回文件路径的信息
+realpath() - 返回规范化的绝对路径名
 
 str_repeat — 重复一个字符串
 string str_repeat ( string $input , int $multiplier )
@@ -6303,3 +6309,275 @@ file_get_contents — 将整个文件读入一个字符串
 file_put_contents — 将一个字符串写入文件
 file — 把整个文件读入一个数组中
 readfile — 输出文件
+
+
+fopen — 打开文件或者 URL
+resource fopen ( string $filename , string $mode [, bool $use_include_path = false [, resource $context ]] )
+
+ fopen() 中 mode 的可能值列表 mode 	说明
+'r' 	只读方式打开，将文件指针指向文件头。
+'r+' 	读写方式打开，将文件指针指向文件头。
+'w' 	写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+'w+' 	读写方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+'a' 	写入方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+'a+' 	读写方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+
+注：r+如果文件中为空，则写入文件，否则不写入。
+
+
+feof — 测试文件指针是否到了文件结束的位置
+bool feof ( resource $handle )
+
+fgetc — 从文件指针中读取字符
+string fgetc ( resource $handle )
+
+fread — 读取文件（可安全用于二进制文件）
+string fread ( resource $handle , int $length )
+
+ftell — 返回文件指针读/写的位置
+int ftell ( resource $handle )
+
+fseek — 在文件指针中定位,移动指针
+int fseek ( resource $handle , int $offset [, int $whence = SEEK_SET ] )
+
+rewind — 倒回文件指针的位置
+bool rewind ( resource $handle )
+将 handle 的文件位置指针设为文件流的开头。 
+
+flock — 轻便的咨询文件锁定(重要),注，妨止多用户同时编辑文件.(不懂可参考：[2014]兄弟连高洛峰.PHP教程12.3.5.文件的锁定机制(ED2000.COM).mp4)
+bool flock ( resource $handle , int $operation [, int &$wouldblock ] )
+参数
+handle
+    文件系统指针，是典型地由 fopen() 创建的 resource(资源)。
+operation
+    operation 可以是以下值之一：
+
+        LOCK_SH取得共享锁定（读取的程序）。
+        LOCK_EX 取得独占锁定（写入的程序。
+        LOCK_UN 释放锁定（无论共享或独占）。
+
+    如果不希望 flock() 在锁定时堵塞，则是 LOCK_NB（Windows 上还不支持）。
+wouldblock
+
+    如果锁定会堵塞的话（EWOULDBLOCK 错误码情况下），可选的第三个参数会被设置为 TRUE。（Windows 上不支持）
+ps:
+<?php
+    $fopen=fopen("./test.txt",'r');
+    flock($fopen,LOCK_SH | LOCK_NB);//锁定文件，不让别的用户操作
+    while(!feof($fopen)){
+        echo fgets($fopen);
+    }
+    flock($fopen,LOCK_UN | LOCK_NB);//解锁
+    fclose($fopen);
+?>
+//文件操作<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//文件上传>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+上传文件的表单，有2点要注意:
+1.methd要设为post,因为get上传不了文件
+2.enctype="multipart/form-data"
+
+上传文件的服务器的配置：
+file_uploads --默认值on
+upload_max_filesize --上传文件最大值，默认值2M
+post_max_size --post过来的所有信息最大值,包括文本和上传文件，默认值8M
+upload_tmp_dir --默认值null
+
+
+$_FILES — HTTP 文件上传变量,获取上传文件的信息。
+
+错误信息说明
+从 PHP 4.2.0 开始，PHP 将随文件信息数组一起返回一个对应的错误代码。该代码可以在文件上传时生成的文件数组中的 error 字段中被找到，也就是 $_FILES['userfile']['error']。
+
+UPLOAD_ERR_OK:其值为 0，没有错误发生，文件上传成功。
+UPLOAD_ERR_INI_SIZE:其值为 1，上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值。
+UPLOAD_ERR_FORM_SIZE:其值为 2，上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值。
+UPLOAD_ERR_PARTIAL:其值为 3，文件只有部分被上传。
+UPLOAD_ERR_NO_FILE:其值为 4，没有文件被上传。
+UPLOAD_ERR_NO_TMP_DIR:其值为 6，找不到临时文件夹。PHP 4.3.10 和 PHP 5.0.3 引进。
+UPLOAD_ERR_CANT_WRITE:其值为 7，文件写入失败。PHP 5.1.0 引进。
+
+ps1:
+<?php
+    header("Content-type:text/html; charset=utf-8");
+    if(isset($_POST['goodUp'])){//判断用户是否有点击提交
+        //第一步，判断是否有错误
+        if($_FILES['pic']['error'] > 0){
+            switch($_FILES['pic']['error']){
+                case 1 : echo '其值为 1，上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值。<br>';
+                         break;
+                case 2 : echo '其值为 2，上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值。<br>';
+                         break;
+                case 3 : echo '其值为 3，文件只有部分被上传。<br>';
+                         break;
+                case 4 : echo '其值为 4，没有文件被上传。<br>';
+                         break;
+                case 6 : echo '其值为 6，找不到临时文件夹。PHP 4.3.10 和 PHP 5.0.3 引进。<br>';
+                         break;
+                case 7 : echo '其值为 7，文件写入失败。PHP 5.1.0 引进。<br>';
+                         break;
+                default: echo '末知错误<br>';
+                         break;
+            }
+            exit;
+        }
+
+        //第二步，判断类型
+        $arr=explode('.',basename($_FILES['pic']['name']));
+        $suffixName=array_pop($arr);//获取文件后缀
+
+        $allowType=array('gif','png','jpg','jpeg');
+
+        if(!in_array($suffixName,$allowType)){
+            echo '上传的类型不正确<br>';
+            exit;
+        }
+
+        //第三步，判断大小
+        $maxsize=102400;//单位：type
+        if($_FILES['pic']['size'] > $maxsize){
+            echo '上传的文件超出了'.$maxsize.'的值';
+            exit;
+        }
+
+        //第四步，上传的文件名一定要设置
+        $tmpfile=$_FILES['pic']['tmp_name'];
+        $trueName='./uploads/'.date("YmdHis").rand(100,999).'.'.$suffixName;
+
+        //第五步，保存文件
+        if(!file_exists('./uploads')){
+            mkdir('./uploads/');
+        }
+        if(move_uploaded_file($tmpfile,$trueName)){
+            
+            echo '上传成功！<br>';
+        }else{
+            echo '上传失败！<br>';
+        }
+    }
+
+?>
+<form action='' method='post' enctype='multipart/form-data' >
+    name:<input name="user" values="" type="text" /><br>
+    <input type="hidden" name="MAX_FILE_SIZE" values="102400000" />
+    file:<input type="file" name="pic" values="" /><br>
+    <input type="submit" name="goodUp" values="上传" />
+</form>
+
+多文件上传，参考：[2014]兄弟连高洛峰.PHP教程12.4.3.处理多个文件上传(ED2000.COM).mp4
+ps:
+<?php
+    header("Content-type:text/html; charset=utf-8");
+    if(isset($_POST['goodUp'])){//判断用户是否有点击提交
+        echo "<pre>";
+        print_r($_FILES);
+        echo "</pre>";
+    }
+?>
+
+<form action='' method='post' enctype='multipart/form-data' >
+    name:<input name="user" values="" type="text" /><br>
+    <input type="hidden" name="MAX_FILE_SIZE" values="102400000" />
+    file:<input type="file" name="pic[]" values="" /><br>
+    file:<input type="file" name="pic[]" values="" /><br>
+    file:<input type="file" name="pic[]" values="" /><br>
+    <input type="submit" name="goodUp" values="上传" />
+</form>
+
+下载文件，借助头信息，参考[2014]兄弟连高洛峰.PHP教程12.4.5.文件下载(ED2000.COM).mp4
+
+//文件上传<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//GD库>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+注意：
+ImageMagick — 图像处理(ImageMagick)比GD库更好，用法也类似，但效率更高。推荐使用，但是比较新的。但是老程序比较多用GD库，所以学习用GD库，开发用ImageMagick。
+
+GD库的作用有两点：一是画图，二是改图
+
+GD库图像绘制的步骤
+1.创建画布
+2.在画布上绘制图像和输入文本
+3.输出最终图形
+4.释放资源
+
+ps1:
+<?php
+    //第一步，创建资源(画布)
+    $img=imagecreatetruecolor(255,255);
+
+    $white=imagecolorallocate($img,255,255,255);//设定一些颜色
+    $red=imagecolorallocate($img,255,62,118);
+    $blue=imagecolorallocate($img,23,108,242);
+
+    imagefill($img,0,0,$white); //填充白色
+
+    //第二步，绘制图像
+    imageline($img,0,0,200,200,$blue);
+    imagestring($img,2,30,30,'goodboy',$red);
+
+    //第三步，输出最终图像,有两种，一个直接输出，一个保存
+    //可以保存到服务器上imagepng($img,'./good.png');//保存为png
+    header("Content-type:image/png");
+    imagePng($img);
+    
+    //第四步，释放资源
+    imagedestroy($img); 
+?>
+
+知道GD库有以下函数就好，要用的时候查手册。
+imagefill --区域填充
+imagesetpixel --画一个单一像素
+imageline --画一条线段
+imagectangle --画一个矩形
+imagefilledrectangle --画一个矩形并填充
+imageellipse --画一个椭圆
+imagefilledellipse --画一个椭圆并填充
+imagearc --画椭圆弧
+imagefilledarc --画一椭圆弧并填充
+imagestring --水平地画一行字符串
+imagestringup --垂直地画一行字符串
+imagechar --水平地画一个字符 
+imagecharup --垂直地画一个字符
+imagettftext --用TrueType字体向图像写入文本
+
+
+
+<?php
+    //添加水印的经典例子
+    function watermark($imagename,$string){
+        list($width,$height,$type) = getimagesize($imagename);
+
+        $types = array(1=>'gif',2=>'jpeg',3=>'png');
+
+        $createimage = 'imagecreatefrom'.$types[$type];
+
+        $img = $createimage($imagename);
+
+        $red = imagecolorallocate($img,255,0,0);
+
+        $x = ($width-imagefontwidth(5) * strlen($string))/2;
+        $y = ($height-imagefontheight(5))/2;
+
+        imagestring($img,5,$x,$y,$string,$red);
+
+        header("Content-Type:image/".$types[$type]);
+        $showImg='image'.$types[$type];
+        $showImg($img);
+
+        imagedestroy($img);
+    }
+
+    watermark("apple.jpg","kkkkkkkkkkkkkkkk");
+?>
+
+
+imagecopyresampled — 重采样拷贝部分图像并调整大小
+看视频：
+图像缩放和剪切经典案例：[2014]兄弟连高洛峰.PHP教程13.3.2.图片的缩放和剪切(ED2000.COM).mp4
+
+imagestring文字水印
+imagecopy图片水印
+看经典视频：[2014]兄弟连高洛峰.PHP教程13.3.3.添加图片水印(ED2000.COM).mp4
+
+imagerotate — 用给定角度旋转图像
+看视频：[2014]兄弟连高洛峰.PHP教程13.3.4.图片的旋转和翻转(ED2000.COM).mp4
