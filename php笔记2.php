@@ -6581,3 +6581,368 @@ imagecopy图片水印
 
 imagerotate — 用给定角度旋转图像
 看视频：[2014]兄弟连高洛峰.PHP教程13.3.4.图片的旋转和翻转(ED2000.COM).mp4
+
+
+//mysql连接数据库>>>>>>>>>>>>>>>>
+<?php
+    //step 1:连接数据库（返回资源)
+    $link = mysql_connect("localhost","root","");
+
+    //step 2: 设置操作(设置字符集)
+    //mysql_query("set names utf8"); //只要文件为utf-8,数据库为utf-8，就没必要设这一步
+
+    //step 3:选择一个数据库作为默认的数据库使用
+    mysql_select_db("test");
+
+    //step 4:操作数据库的sql语句执行
+    //语句分两种：一种是没有结果集的(执行成功，返回true,失败返回false),另一种有返回结果集的。
+
+    //step last:关闭连接、
+    mysql_close();
+?>
+
+mysql连接数据库两和语句，一种没有返回结果集的，如insert,delete
+一种有返回结果集的，如查询语句select
+
+返回结果集的处理有四种处理，推荐使用前两种：
+mysql_fetch_row($result) //返回索引数组
+mysql_fetch_assoc($result) //返回关联数组
+mysql_fetch_array($result) //可返回索引数组和关联数组，效率低。
+mysql_fetch_object(result) //返回对象格式，注：不好处理，不建议使用
+特点：
+1.返回默认指针指向的那条记录的结果。
+2.默认指向第一条数据
+3.获取一条数据后，指针向后移动。
+4.如果是最后一条，没有记录，再获取就返回false
+
+//mysql连接数据库《《《《《《《《《《《《《《
+
+//PDO连接数据库》》》》》》》》》》》》》》
+PDO::__construct — 创建一个表示数据库连接的 PDO 实例
+PDO::__construct ( string $dsn [, string $username [, string $password [, array $driver_options ]]] )
+注：DSN(Data Source Name)数据源名称
+    具体数据库的驱动
+    主机
+    数据库
+
+ps:
+<?php
+try{
+    $pdo=new PDO("mysql:host=localhost; dbname=testxdl","root","");
+}catch(PDOException $e){
+    echo 'error is :'.$e->getMessage();
+}
+?>
+
+
+PDO::getAttribute — 取回一个数据库连接的属性 
+<?php
+try{
+    $pdo=new PDO("mysql:host=localhost; dbname=testxdl","root","");
+}catch(PDOException $e){
+    echo 'error is :'. $e->getMessage();
+}
+
+echo $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+?>
+
+PDO::setAttribute — 设置属性
+bool PDO::setAttribute ( int $attribute , mixed $value )
+
+
+PDO::errorInfo — Fetch extended error information associated with the last operation on the database handle
+public array PDO::errorInfo ( void )
+注：默认的模式看不到sql语句的错误，如果sql语句有错，不会有提示,可以设置错误报告模式，也可以打印出来，打印如下：
+<?php
+try{
+    $pdo=new PDO("mysql:host=localhost; dbname=testxdl","root","");
+}catch(PDOException $e){
+    echo 'error is :'. $e->getMessage();
+}
+
+    $result=$pdo->exec("select * from skyuse");
+    if(!$result){
+        print_r($pdo->errorinfo());
+    }
+?>
+
+
+
+PDO::ATTR_ERRMODE：错误报告。
+    PDO::ERRMODE_SILENT： 仅设置错误代码。
+    PDO::ERRMODE_WARNING: 引发 E_WARNING 错误
+    PDO::ERRMODE_EXCEPTION: 抛出 exceptions 异常。
+ps:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost; dbname=testxdl","root","");
+    }catch(PDOException $e){
+        echo 'error is :'. $e->getMessage();
+    }
+    $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    try{
+        $result=$pdo->exec("select * from skyuse");
+    }catch(PDOException $e){
+        echo 'error_xj is: '. $e->getMessage();
+    }
+?>
+
+PDO中执行SQL语句的方法有两个主要的：
+    1.exec() --用来处理非结果集的，insert update create ...
+        返回影响的函数,用于判断是否成功！
+        PDO::lastInsertId — 返回最后插入行的ID或序列值
+    2.query() --用来处理有结果集的语句：select desc show
+        返回的是PDOStatement类的对象，再通过这个类的方法获取结果。
+        query()也可以处理非结果集的SQL语句，但没有返回影响的函数，没办法判断是否成功，不建议使用。
+设直字符值，用exec()和query()都可以。
+
+PDO::exec — 执行一条 SQL 语句，并返回受影响的行数 
+int PDO::exec ( string $statement )
+
+PDO::query — Executes an SQL statement, returning a result set as a PDOStatement object 
+
+ps1:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        $result = $pdo->exec("insert into user(id,name)values(1,'xiao')");
+        //用exec()返回的影响的行数判断是否成功。
+        var_dump($result);
+        if($result){
+            echo '成功！';
+        }else{
+            echo '失败!';
+        }
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+
+PDO::lastInsertId — 返回最后插入行的ID或序列值
+string PDO::lastInsertId ([ string $name = NULL ] )
+ps:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        $result = $pdo->exec("insert into user(id,name)values(12,'xiao')");
+        echo $result.'<br>';
+        echo $pdo->lastInsertId();
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+
+php的预处理语句优点：
+1.效率高
+2.安全性好。
+所以建议使用php的预处理方式去执行SQL语句。不要用exec()和query()
+
+
+PDO::prepare — Prepares a statement for execution and returns a statement object
+public PDOStatement PDO::prepare ( string $statement [, array $driver_options = array() ] )
+
+PDOStatement::execute — 执行一条预处理语句
+bool PDOStatement::execute ([ array $input_parameters ] )
+
+ps1:
+//注：问号的对应是用索引下标
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("insert into user(id,name)value(?,?);");
+        //绑定参数(?),将问号和一个变量关联起来
+        $result->bindParam(1,$id);
+        $result->bindParam(2,$name);
+
+        //给变量一个值，就会给准备好的语句中对应问号一个值
+        $id=17;
+        $name='haining';
+
+        //通知数据库，执行准备好的语句
+        $result->execute();
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+ps2:
+//注:没有问号，下标用关联数组
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("insert into user(id,name)value(:id,:name);");
+        //绑定参数(:),将问号和一个变量关联起来
+        $result->bindParam("id",$id);
+        $result->bindParam("name",$name);
+
+        //给变量一个值，就会给准备好的语句中对应问号一个值
+        $id=137;
+        $name='lanpei';
+
+        //通知数据库，执行准备好的语句
+        $result->execute();
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+ps3:
+//注：问号是用下标为索引的数组形式
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("insert into user(id,name)value(?,?);");
+        //通知数据库，执行准备好的语句
+        $result->execute(array(327,'goodking'));
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+ps4:
+//注：没有问号，下标是关联数组
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("insert into user(id,name)value(:id,:name);");
+        //通知数据库，执行准备好的语句
+        $result->execute(array('id'=>27,'name'=>'good'));
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+
+PDOStatement::fetch — 从结果集中获取下一行
+mixed PDOStatement::fetch ([ int $fetch_style [, int $cursor_orientation = PDO::FETCH_ORI_NEXT [, int $cursor_offset = 0 ]]] )
+ps:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("select * from user");
+        //通知数据库，执行准备好的语句
+        $result->execute();
+        while($row=$result->fetch(PDO::FETCH_ASSOC)){
+            print_r($row);
+            echo '<br>';
+        }
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+
+
+PDOStatement::fetchAll — 返回一个包含结果集中所有行的数组
+array PDOStatement::fetchAll ([ int $fetch_style [, mixed $fetch_argument [, array $ctor_args = array() ]]] )
+ps:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("select * from user");
+        //通知数据库，执行准备好的语句
+        $result->execute();
+        print_r($result->fetchAll(PDO::FETCH_NUM));
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+PDOStatement::setFetchMode — 为语句设置默认的获取模式。 
+可以设置fetch()和fetchAll()的获取模式，如获取索引数组，还是关联数组。
+
+
+PDOStatement::bindColumn — 绑定一列到一个 PHP 变量
+bool PDOStatement::bindColumn ( mixed $column , mixed &$param [, int $type [, int $maxlen [, mixed $driverdata ]]] )
+ps:
+<?php
+    try{
+        $pdo=new PDO("mysql:host=localhost;dbname=testxdl","root","");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+
+    try{
+        //只是将这个语句放到服务器上（数据库管理系统）,编写后等待，没有执行
+        $result = $pdo->prepare("select id,name from user");
+        //通知数据库，执行准备好的语句
+        $result->execute();
+        //绑定栏目
+        $result->bindColumn("id",$id);
+        $result->bindColumn("name",$name);
+        while($result->fetch()){
+            echo $id.'>>>>>>>>>>'.$name.'<br>';
+        }
+    }catch(PDOException $e){
+        echo "ERROR : ". $e->getMessage();
+    }
+?>
+
+PDOStatement::rowCount — 返回受上一个 SQL 语句影响的行数
+int PDOStatement::rowCount ( void )
+
+将大数据保存到数据库，如图片，视频。了解下，不常用。
+[2014]兄弟连高洛峰.PHP教程15.2.6.用PDO存取大数据对象(ED2000.COM).mp4
+
+//PDO连接数据库《《《《《《《《《《《《《《《《《《《《
+
+//memcache分布式的高速缓存系统》》》》》》》》》》》》》
+
+memcache在windows下和linux下的安装，需要安装软件。
