@@ -6946,3 +6946,135 @@ int PDOStatement::rowCount ( void )
 //memcache分布式的高速缓存系统》》》》》》》》》》》》》
 
 memcache在windows下和linux下的安装，需要安装软件。
+在windows下和linux安装php的扩展。
+ps:
+<?php
+    //创建memcache对象
+    $men = new Memcache;
+
+    //连接memcache服务器
+    $men->connect("localhost",11211):    
+
+    //操作
+    $men->add("xiao","goodbody",MEMCACHE_COMPRESSED,30); 
+
+    //关闭连接
+    $men->close();
+?>
+
+1.memcached-win对应得安装包
+2.解压，可以放到任意目录，以管理员身份打开cmd
+3.在安装的目录下面，执行如下命令
+   memcached.exe -d install 安装
+   Memcached.exe –d start    开启服务
+
+
+   Memcahced.exe –d stop    停止服务
+   Memcached.exe –d restart    重启
+   memcached.exe -d uninstall 卸载
+4.在启动之后连接
+  D:wampbin> telnet 127.0.0.1 11211    –连接memcache端口11211使用quit退出。
+
+5. 
+  5个常用的命令
+– stats: 当前所有memcached服务器运行的状态信息
+– add: 添加一个数据到服务器
+– set: 替换一个已经存在的数据，如果数据不存在，则和add命令相同。
+– get: 从服务器端提取指定的数据。
+– delete: 删除指定的单个数据，如果要清除所有数据，可以使用flush_all指令。
+
+6.
+　• Memcache的协议的错误部分主要是三个错误提示之提示指令：
+– ERROR — 普通错误信息，比如指令错误之类的
+– CLIENT_ERROR <错误信息> — 客户端错误
+– SERVER_ERROR <错误信息> –服务器端错误  
+
+7.数据管理命令
+ 格式：<命令> <键> <标记> <有效期> <数据长度>
+ 其中：
+– 命令：add(添加)、set(修改)、delete(删除)、get(获取)
+– <键> -key，是发送过来指令的key内容
+– <标记> – flags，是调用set指令保存数据时候的flags标记
+– 有效期：是数据在服务器上的有效期限，如果是0，则数据永远有效，单位是秒
+– 数据的长度，block data 块数据的长度，一般在这个个长度结束以后下一行跟着block data数据内容，
+
+– 发送完数据以后，客户端一般等待服务器端的返回，服务器端的返回：
+– STORED 数据保存成功
+– NOT_STORED 数据保存失败，是因为服务器端这个数据key已经存在
+
+8.php的配置
+  ext/文件夹下面，放入对应得php_memcache.dll文件
+  php.ini配置文件，添加如下内容：extension=php_memcache.dll
+  重新启动服务apache
+
+9.php中Memcache类的方法
+Memcache::add ———— 增加一个条目到缓存服务器
+Memcache::addServer ————向连接池中添加一个memcache服务器
+Memcache::close ————关闭memcache连接
+Memcache::connect ————打开一个memcached服务端连接
+Memcache::decrement ————减小元素的值
+Memcache::delete ————从服务端删除一个元素
+Memcache::flush ————清洗(删除)已经存储的所有的元素
+Memcache::get ————从服务端检回一个元素
+Memcache::getExtendedStats ————缓存服务器池中所有服务器统计信息
+Memcache::getServerStatus ———— 获取一个服务器的在线/离线状态
+Memcache::getStats ———— 获取服务器统计信息
+Memcache::getVersion ———— 返回服务器版本信息
+Memcache::increment ———— 增加一个元素的值
+Memcache::pconnect ———— 打开一个到服务器的持久化连接
+Memcache::replace ———— 替换已经存在的元素的值
+Memcache::set ————Store data at the server
+Memcache::setCompressThreshold —————开启大值自动压缩
+Memcache::setServerParams ————运行时修改服务器参数和状态
+Memcache 函数memcache_debug ———— 转换调试输出的开/关
+
+10. memcached基本参数设置：
+
+    -p 监听的端口
+    -l 连接的IP地址, 默认是本机
+    -d start 启动memcached服务
+    -d restart 重起memcached服务
+    -d stop|shutdown 关闭正在运行的memcached服务
+    -d install 安装memcached服务
+    -d uninstall 卸载memcached服务
+    -u 以的身份运行 (仅在以root运行的时候有效)
+    -m 最大内存使用，单位MB。默认64MB
+    -M 内存耗尽时返回错误，而不是删除项
+    -c 最大同时连接数，默认是1024
+    -f 块大小增长因子，默认是1.25
+    -n 最小分配空间，key+value+flags默认是48
+    -h 显示帮助
+
+　　设置参数时需要先停止memcached，然后用命令行设置，比如：c:\memcached> memcached.exe -m 1 -d start
+//memcache分布式的高速缓存系统《《《《《《《《《《《《《
+
+//会话控制，session cookie
+变量的四种级别：
+1.当前页面的变量，只能在本页面使用，页面完成后，就释放。
+2.两个页面之间传递变量，通过get url传递.
+3.会放在级别 session.
+4.全局 global,写到数据库或者文件中，任何人都可以访问。
+
+
+
+setcookie — 发送 Cookie
+说明
+bool setcookie ( string $name [, string $value = "" [, int $expire = 0 [, string $path = "" [, string $domain = "" [, bool $secure = false [, bool $httponly = false ]]]]]] )
+setcookie() 定义了 Cookie，会和剩下的 HTTP 头一起发送给客户端。 和其他 HTTP 头一样，必须在脚本产生任意输出之前发送 Cookie（由于协议的限制）。 请在产生任何输出之前（包括 <html> 和 <head> 或者空格）调用本函数。//  去掉配色用</head>
+
+一旦设置 Cookie 后，下次打开页面时可以使用 $_COOKIE 读取。 Cookie 值同样也存在于 $_REQUEST。
+
+ps1:字符串格式
+index.php文件：setCookie('xj','xiaojing',time()+60);
+testCookie.php文件：print_r($_COOKIE);
+
+ps2:数组格式
+index.php文件：
+    setCookie("data['id']",137,time()+60*60);
+    setCookie("data['name']",'king',time()+60*60);
+testCookie.php文件：print_r($_COOKIE);
+
+
+要删除一个 Cookie，应该设置过期时间为过去，以触发浏览器的删除机制。
+ps:
+setCookie('xj','',time()-60);
