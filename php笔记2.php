@@ -6164,6 +6164,9 @@ ini_set — 为一个配置选项设置值
 string ini_set ( string $varname , string $newvalue )
 设置指定配置选项的值。这个选项会在脚本运行时保持新的值，并在脚本结束时恢复。
 
+
+php中修改php配置文件(php.ini)的函数主要有四个函数：ini_get、ini_set、ini_get_all、ini_restore。其中ini_set和ini_get比较常用
+
 异常
 try{
 }catch(Exception $e){
@@ -7078,3 +7081,57 @@ testCookie.php文件：print_r($_COOKIE);
 要删除一个 Cookie，应该设置过期时间为过去，以触发浏览器的删除机制。
 ps:
 setCookie('xj','',time()-60);
+
+
+session_start — 启动新会话或者重用现有会话
+bool session_start ([ array $options = [] ] )
+session_start() 会创建新会话或者重用现有会话。 如果通过 GET 或者 POST 方式，或者使用 cookie 提交了会话 ID， 则会重用现有会话。 
+
+注：每个页面都要写session_start();先判断请求的头文件中是否含有sessionID，变量名为PHPSESSID。如果有就在服务器中查找对应的sessionID,如果没有就新创建一个。
+
+
+清除session
+<?php
+    //first step开启session会话
+    session_start();
+    $username=$_SESSION['username'];
+    
+    //删除单个session
+    unset($_SESSION['name']);
+
+    //The second step清空$_SESSION中的数据
+    $_SESSION = array();
+
+    //third step删除客户cookie中的sessionid
+    if(isset($_COOKIE[session_name()])){
+        setCookie(session_name(),'',time()-3600,'/');//一定要加根目录，否则删除不干静。
+    }
+
+    //the fourth step销毁session
+    session_destroy();
+
+    echo "goodbly $username";
+?>
+
+session_id — 获取/设置当前会话 ID
+session_name — 读取/设置会话名称
+
+
+判断客户端是否禁用cookie,如果禁用，则用url传输sessionid.
+用预定义SID判断cookie有开启，则SID的值为空。
+SID包含着会话名以及会话 ID 的常量，格式为 "name=ID"，或者如果会话 ID 已经在适当的会话 cookie 中设定时则为空字符串。
+ps:
+<?php
+    $sid=!empty($_GET[session_name()])?$_GET[session_name()] : "";
+    if(!empty($sid)){
+        //可以设置用已有的sessionid开启会话。
+        session_id($sid);
+    }
+    session_start();
+    $_SESSION['xj']='xiaojing';
+    $_SESSION['hn']='haining';
+    $_SESSION['lp']='lanpei';
+    $_SESSION[session_name()]=session_id();
+    echo $sid;
+?>
+<a href="index.php?<?php echo SID ?>">one</a><!--用预定义常量，如果有cookie，SID就为空-->
