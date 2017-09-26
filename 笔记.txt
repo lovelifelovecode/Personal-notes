@@ -1,0 +1,32 @@
+mysql:
+truncate语句，是清空表中的内容，包括自增主键的信息。truncate表后，表的主键就会重新从1开始。
+语法：TRUNCATE TABLE table1
+
+
+php:
+php判断文件夹是否存在不存在则创建
+
+function mkdirs($dir, $mode = 0777)
+{
+    if (is_dir($dir) || @mkdir($dir, $mode)) return TRUE;
+    if (!mkdirs(dirname($dir), $mode)) return FALSE;
+    return @mkdir($dir, $mode);
+}
+mkdirs("aa01");
+
+默认的 mode 是 0777，意味着最大可能的访问权。
+
+
+final可以修饰类，方法
+static可以修饰属性，方法
+const修饰的成员属性为常量，只能修饰成员属性
+
+在string语句中变量名尽量用｛｝包起来。
+
+php给每一个img标签都加上width="100%"
+        $preg = "/<img.*?src=[\"|\'](.*?)[\"|\'].*?>/";
+        $width = "100%";
+        $img = '<img src="$1" width="'.$width.'" >';
+        $appcontent = preg_replace($preg,$img,$appcontent);
+
+empty只能用于判断变量，不能用于判断方法的返回值。
