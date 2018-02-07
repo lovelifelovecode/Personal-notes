@@ -1,2 +1,0 @@
-开发者ID(AppID)wxbea9e6eca191f63b 
-AppSecret:e8b046dc16999aa20d104f25ed2d1fce
